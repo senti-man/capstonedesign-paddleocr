@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>개인정보 마스킹 도우미</title>
+<style>
+  body {
+    width: 260px;
+    font-family: Roboto, Arial, sans-serif;
+    padding: 16px;
+    color: #202124;
+  }
+  h1 {
+    font-size: 15px;
+    margin: 0 0 12px 0;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+  }
+  .row:last-of-type {
+    border-bottom: none;
+  }
+  .label {
+    font-size: 13px;
+    color: #5f6368;
+  }
+  .value {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .value.warn {
+    color: #d93025;
+  }
+  button {
+    margin-top: 14px;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #dadce0;
+    background: #fff;
+    color: #3c4043;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .note {
+    margin-top: 10px;
+    font-size: 11px;
+    color: #9aa0a6;
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+  <h1>📄 개인정보 마스킹 도우미</h1>
+
+  <div class="row">
+    <span class="label">개인정보 감지</span>
+    <span class="value" id="detected">0</span>
+  </div>
+  <div class="row">
+    <span class="label">마스킹 완료</span>
+    <span class="value" id="masked">0</span>
+  </div>
+  <div class="row">
+    <span class="label">전송 차단</span>
+    <span class="value warn" id="blockedSend">0</span>
+  </div>
+
+  <button id="resetBtn">통계 초기화</button>
+  <p class="note">설치 이후 누적 집계입니다. 모든 처리는 이 PC의 로컬 서버(127.0.0.1:5000)에서만 이루어집니다.</p>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+.venv/
+poppler/
+__pycache__/
+*.pyc
+uploads/*
+!uploads/.gitkeep
+processed/*
+!processed/.gitkeep
+*_ocr.json

@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Gmail 목업 (content_script.js 테스트용)</title>
+</head>
+<body style="font-family: Roboto, Arial, sans-serif; padding: 40px; background:#f5f5f5;">
+  <h2>Gmail 목업 - content_script.js 동작 테스트</h2>
+  <p style="color:#666; font-size:13px;">실제 Gmail 대신 최소한의 구조(role=dialog, file input, 보내기 버튼)만 흉내낸 페이지입니다.</p>
+
+  <div role="dialog" aria-label="새 메일" style="border:1px solid #ccc; width:520px; padding:16px; border-radius:8px; background:#fff;">
+    <div style="margin-bottom:8px;">받는사람: test@example.com</div>
+
+    <div id="dropzone" style="border:2px dashed #aaa; padding:20px; text-align:center; margin-bottom:12px; color:#888;">
+      여기로 파일을 드래그하세요 (드롭존 테스트용)
+    </div>
+
+    <label style="display:inline-block; padding:6px 12px; background:#eee; border-radius:4px; cursor:pointer;">
+      📎 파일 첨부
+      <input type="file" id="fileInput" multiple style="display:none;">
+    </label>
+
+    <div id="attachedList" style="margin-top:8px; font-size:13px; color:#555;">첨부된 파일 없음</div>
+
+    <div contenteditable="true" role="textbox" aria-label="메시지 본문" id="composeBody"
+         style="margin-top:12px; min-height:80px; border:1px solid #eee; border-radius:4px; padding:8px; font-size:13px;">
+    </div>
+
+    <div style="margin-top:16px; text-align:right;">
+      <div role="button" aria-label="보내기" id="sendBtn"
+           style="display:inline-block; padding:8px 20px; background:#1a73e8; color:#fff; border-radius:4px; cursor:pointer; user-select:none;">
+        보내기
+      </div>
+    </div>
+  </div>
+
+  <div id="sentLog" style="margin-top:20px; font-weight:bold; color:#188038;"></div>
+
+  <div style="margin-top:30px;">
+    <h3>받은 메일 (수신함 테스트)</h3>
+    <div role="listitem" style="border:1px solid #ccc; padding:12px; width:488px; background:#fff; margin-bottom:16px;">
+      <p style="margin:0 0 8px 0;">보낸사람: sender@example.com</p>
+      <p style="margin:0 0 12px 0;">첨부파일 확인 부탁드립니다.</p>
+      <a href="/test/sample_pii.png" aria-label="sample_pii.png 다운로드" id="downloadLink"
+         style="display:inline-block; padding:6px 12px; background:#eee; border-radius:4px; text-decoration:none; color:#333;">
+        📎 sample_pii.png 다운로드
+      </a>
+    </div>
+
+    <div role="listitem" id="phishingMail" style="border:1px solid #ccc; padding:12px; width:488px; background:#fff; cursor:pointer;">
+      <p style="margin:0 0 8px 0;">보낸사람: 네이버 고객센터 &lt;support@naver-verify.net&gt;</p>
+      <p style="margin:0 0 12px 0;">
+        비정상적인 로그인이 감지되었습니다. 계정이 정지되기 전에 즉시 확인하세요.
+        <a href="http://192.168.45.12/verify">계정 확인하기</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const attachedList = document.getElementById('attachedList');
+    const sendBtn = document.getElementById('sendBtn');
+    const sentLog = document.getElementById('sentLog');
+    const dropzone = document.getElementById('dropzone');
+
+    // 실제 Gmail은 change 이벤트를 "선택된 파일을 첨부 목록에 추가"로 처리하는 것으로
+    // 보인다(교체가 아님) — 그래서 mockAttachments를 누적 배열로 관리해 그 동작을 흉내낸다.
+    // content_script.js가 캡처 단계에서 원본 change를 막지 못하면, 원본 선택 이벤트와
+    // 나중에 합성 dispatch되는 결과 이벤트가 각각 여기 도달해 파일이 중복 누적된다.
+    let mockAttachments = [];
+
+    function renderAttached() {
+      const names = mockAttachments.map(f => f.name);
+      attachedList.textContent = names.length ? ('첨부됨: ' + names.join(', ')) : '첨부된 파일 없음';
+    }
+    fileInput.addEventListener('change', () => {
+      mockAttachments.push(...Array.from(fileInput.files));
+      renderAttached();
+    });
+
+    // 이 리스너는 "실제 Gmail이 메일을 전송하는 동작"을 흉내낸다.
+    // content_script.js가 캡처 단계에서 먼저 가로채 막지 않는 한 여기까지 도달한다.
+    sendBtn.addEventListener('click', () => {
+      const names = mockAttachments.map(f => f.name);
+      sentLog.textContent = '실제로 전송됨! ' + new Date().toLocaleTimeString() + ' / 첨부: ' + (names.join(', ') || '(없음)');
+    });
+
+    dropzone.addEventListener('dragover', (e) => e.preventDefault());
+  </script>
+
+  <script src="../content_script.js"></script>
+</body>
+</html>

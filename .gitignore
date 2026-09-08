@@ -1,0 +1,20 @@
+# Python
+masking_module/.venv/
+**/__pycache__/
+*.pyc
+
+# Bundled poppler binaries (large; see README for setup instructions)
+masking_module/poppler/
+
+# Runtime data (uploaded/processed test files)
+masking_module/uploads/*
+!masking_module/uploads/.gitkeep
+masking_module/processed/*
+!masking_module/processed/.gitkeep
+
+# OCR intermediate artifacts
+*_ocr.json
+
+# OS / editor
+.DS_Store
+.vscode/

@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>popup.js 로직 테스트</title>
+<script>
+  // 실제 익스텐션 런타임 밖이라 chrome.storage가 없다 -> 최소 모킹으로 popup.js 로직만 검증한다.
+  const mockStore = { stats: { detected: 3, masked: 2, blockedSend: 1 } };
+  const listeners = [];
+  window.chrome = {
+    storage: {
+      local: {
+        get(defaults, cb) { cb({ ...defaults, ...mockStore }); },
+        set(obj) {
+          Object.assign(mockStore, obj);
+          listeners.forEach((fn) => fn({ stats: { newValue: mockStore.stats } }, 'local'));
+        },
+      },
+      onChanged: {
+        addListener(fn) { listeners.push(fn); },
+      },
+    },
+  };
+</script>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    // popup.html의 body 내용을 그대로 삽입 (스타일은 생략, 로직 검증용)
+    document.getElementById('app').innerHTML = `
+      <span id="detected">0</span>
+      <span id="masked">0</span>
+      <span id="blockedSend">0</span>
+      <button id="resetBtn">리셋</button>
+    `;
+  </script>
+  <script src="../popup.js"></script>
+</body>
+</html>

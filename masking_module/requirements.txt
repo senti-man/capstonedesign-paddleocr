@@ -1,0 +1,10 @@
+flask
+flask-cors
+pdf2image
+openpyxl
+pillow
+img2pdf
+requests
+pymupdf
+paddlepaddle
+paddleocr
